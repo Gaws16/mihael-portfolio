@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendContactEmail } from "@/lib/email";
 
-// TODO: Implement SMTP email sending here
-// This is a placeholder API route
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -15,25 +14,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Add SMTP email sending logic here
-    // Example:
-    // await sendEmail({
-    //   to: process.env.CONTACT_EMAIL,
-    //   subject: `Contact form submission from ${name}`,
-    //   body: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-    // });
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
 
-    // For now, just log the data (remove in production)
-    console.log("Contact form submission:", { name, email, message });
+    // Send email
+    await sendContactEmail({ name, email, message });
 
     return NextResponse.json(
-      { message: "Message received successfully" },
+      { message: "Message sent successfully" },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error processing contact form:", error);
+    
+    // Don't expose internal error details to client
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
+    
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to send message. Please try again later." },
       { status: 500 }
     );
   }
