@@ -1,30 +1,85 @@
 import { getAboutContent } from "@/app/actions/getAboutContent";
 import { getProjects } from "@/app/actions/getProjects";
+import { getProfilePhotoUrl } from "@/app/actions/getProfilePhoto";
 import {
   createProjectAction,
   deleteProjectAction,
   updateAboutAction,
   updateProjectAction,
+  updateProfilePhotoAction,
 } from "./actions";
+import { AdminProjectsGrid } from "@/components/admin/AdminProjectsGrid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Project } from "@/types";
+import ProfilePhoto from "@/components/profile/ProfilePhoto";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
-  const [aboutContent, projects] = await Promise.all([
+interface AdminPageProps {
+  searchParams?: {
+    status?: string;
+  };
+}
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const [aboutContent, projects, profilePhotoUrl] = await Promise.all([
     getAboutContent(),
     getProjects(),
+    getProfilePhotoUrl(),
   ]);
+
+  const status = searchParams?.status;
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
         <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
+
+        {status && (
+          <div className="rounded-md border border-emerald-600/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-100">
+            {status === "about-updated" && "About section updated successfully."}
+            {status === "project-created" && "Project created successfully."}
+            {status === "project-updated" && "Project updated successfully."}
+            {status === "project-deleted" && "Project deleted successfully."}
+            {status === "profile-updated" && "Profile photo updated successfully."}
+          </div>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Photo</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6 md:flex-row md:items-center">
+            <div className="flex justify-center md:justify-start">
+              <ProfilePhoto src={profilePhotoUrl} />
+            </div>
+            <form
+              action={updateProfilePhotoAction}
+              className="flex-1 space-y-3"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="profilePhoto">Upload new photo</Label>
+                <Input
+                  id="profilePhoto"
+                  name="profilePhoto"
+                  type="file"
+                  accept="image/*"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Recommended: a square image at least 512×512px for best
+                  quality.
+                </p>
+              </div>
+              <Button type="submit" className="w-full sm:w-auto">
+                Save Profile Photo
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -97,14 +152,8 @@ export default async function AdminPage() {
           <CardHeader>
             <CardTitle>Existing Projects</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-8">
-            {projects.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No projects found.</p>
-            ) : (
-              projects.map((project) => (
-                <ProjectEditor key={project.id} project={project} />
-              ))
-            )}
+          <CardContent>
+            <AdminProjectsGrid projects={projects} />
           </CardContent>
         </Card>
       </div>
@@ -149,38 +198,3 @@ function Field({
     </div>
   );
 }
-
-function ProjectEditor({ project }: { project: Project }) {
-  const technologiesInput = project.technologies?.join(", ") ?? "";
-
-  return (
-    <div className="rounded-lg border border-border/50 p-4">
-      <form action={updateProjectAction} className="space-y-3">
-        <input type="hidden" name="id" value={project.id} />
-        <Field label="Title" name="title" defaultValue={project.title} />
-        <Field label="Description" name="description" defaultValue={project.description} textarea />
-        <Field label="Image URL" name="image" defaultValue={project.image} />
-        <Field label="Project URL" name="url" defaultValue={project.url} />
-        <Field
-          label="Technologies (comma separated)"
-          name="technologies"
-          defaultValue={technologiesInput}
-        />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <Button type="submit" className="w-full sm:w-auto">
-            Save Changes
-          </Button>
-          <Button
-            type="submit"
-            formAction={deleteProjectAction}
-            variant="destructive"
-            className="w-full sm:w-auto"
-          >
-            Delete Project
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
-

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { supabaseAdmin } from "@/lib/supabaseAdminClient";
 
@@ -8,6 +9,9 @@ function revalidateAfterChange() {
   revalidatePath("/");
   revalidatePath("/admin");
 }
+
+const PROFILE_BUCKET = "project_images";
+const PROFILE_KEY = "profile1.jpg";
 
 export async function updateAboutAction(formData: FormData) {
   const id = formData.get("id")?.toString();
@@ -37,6 +41,7 @@ export async function updateAboutAction(formData: FormData) {
   }
 
   revalidateAfterChange();
+  redirect("/admin?status=about-updated");
 }
 
 export async function createProjectAction(formData: FormData) {
@@ -65,6 +70,7 @@ export async function createProjectAction(formData: FormData) {
   }
 
   revalidateAfterChange();
+  redirect("/admin?status=project-created");
 }
 
 export async function updateProjectAction(formData: FormData) {
@@ -95,6 +101,7 @@ export async function updateProjectAction(formData: FormData) {
   }
 
   revalidateAfterChange();
+  redirect("/admin?status=project-updated");
 }
 
 export async function deleteProjectAction(formData: FormData) {
@@ -111,6 +118,30 @@ export async function deleteProjectAction(formData: FormData) {
   }
 
   revalidateAfterChange();
+  redirect("/admin?status=project-deleted");
+}
+
+export async function updateProfilePhotoAction(formData: FormData) {
+  const file = formData.get("profilePhoto");
+
+  if (!file || !(file instanceof File) || file.size === 0) {
+    throw new Error("No profile photo file provided.");
+  }
+
+  const { error } = await supabaseAdmin.storage
+    .from(PROFILE_BUCKET)
+    .upload(PROFILE_KEY, file, {
+      cacheControl: "3600",
+      upsert: true,
+      contentType: file.type || "image/jpeg",
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  revalidateAfterChange();
+  redirect("/admin?status=profile-updated");
 }
 
 function parseTechnologies(value: FormDataEntryValue | null): string[] {
