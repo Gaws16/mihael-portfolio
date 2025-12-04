@@ -31,3 +31,4 @@ export default function InfoCard({ card, className }: InfoCardProps) {
   );
 }
 
+

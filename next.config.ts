@@ -10,12 +10,15 @@ const supabaseHostname = (() => {
   }
 })();
 
-const remotePatterns = [
+const remotePatterns: Array<{
+  protocol: "http" | "https";
+  hostname: string;
+}> = [
   {
     protocol: "https",
     hostname: "images.unsplash.com",
   },
-] as NextConfig["images"]["remotePatterns"];
+];
 
 if (supabaseHostname) {
   remotePatterns.push({
