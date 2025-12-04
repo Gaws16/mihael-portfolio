@@ -5,13 +5,32 @@ import { Project } from "@/types";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
+import { useState } from "react";
 
 interface ProjectCardProps {
   project: Project;
   className?: string;
 }
 
+const PROJECT_PLACEHOLDER =
+  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop&auto=format&q=80";
+
+function sanitizeProjectImage(url?: string | null) {
+  if (!url) return PROJECT_PLACEHOLDER;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+  } catch {
+    // ignored
+  }
+  return PROJECT_PLACEHOLDER;
+}
+
 export default function ProjectCard({ project, className }: ProjectCardProps) {
+  const [imageSrc, setImageSrc] = useState(sanitizeProjectImage(project.image));
+
   return (
     <Card
       className={cn(
@@ -22,11 +41,12 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
     >
       <div className="relative h-48 w-full overflow-hidden bg-muted">
         <Image
-          src={project.image}
+          src={imageSrc}
           alt={project.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onError={() => setImageSrc(PROJECT_PLACEHOLDER)}
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

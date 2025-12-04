@@ -21,6 +21,7 @@ export interface InfoCard {
 }
 
 export interface AboutContent {
+  id?: string;
   fullName: string;
   shortBio: string;
   skills: string;

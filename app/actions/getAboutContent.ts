@@ -16,7 +16,7 @@ const DEFAULT_ABOUT_CONTENT: AboutContent = {
 export async function getAboutContent(): Promise<AboutContent> {
   const { data, error } = await supabase
     .from("about_me")
-    .select("full_name, short_bio, skills, experience, education")
+    .select("id, full_name, short_bio, skills, experience, education")
     .limit(1)
     .maybeSingle();
 
@@ -30,6 +30,7 @@ export async function getAboutContent(): Promise<AboutContent> {
   }
 
   return {
+    id: data.id,
     fullName: data.full_name,
     shortBio: data.short_bio,
     skills: data.skills,
