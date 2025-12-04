@@ -2,11 +2,12 @@
 
 import ProjectCard from "./ProjectCard";
 import { Project } from "@/types";
-import projectsData from "@/data/projects.json";
 
-export default function ProjectsSection() {
-  const projects = projectsData as Project[];
+interface ProjectsSectionProps {
+  projects: Project[];
+}
 
+export default function ProjectsSection({ projects }: ProjectsSectionProps) {
   return (
     <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <div className="container mx-auto max-w-7xl">
