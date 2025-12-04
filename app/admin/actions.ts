@@ -20,6 +20,7 @@ export async function updateAboutAction(formData: FormData) {
   const skills = formData.get("skills")?.toString().trim();
   const experience = formData.get("experience")?.toString().trim();
   const education = formData.get("education")?.toString().trim();
+  const hobbies = formData.get("hobbies")?.toString().trim();
 
   if (!id) {
     throw new Error("About record missing id.");
@@ -33,6 +34,7 @@ export async function updateAboutAction(formData: FormData) {
       skills,
       experience,
       education,
+      hobbies,
     })
     .eq("id", id);
 

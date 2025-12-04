@@ -27,6 +27,7 @@ export interface AboutContent {
   skills: string;
   experience: string;
   education: string;
+  hobbies: string;
 }
 
 

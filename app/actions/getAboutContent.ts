@@ -4,19 +4,21 @@ import { AboutContent } from "@/types";
 const DEFAULT_ABOUT_CONTENT: AboutContent = {
   fullName: "Mihael Gaws",
   shortBio:
-    "I’m passionate about crafting human-centered digital products that balance thoughtful design with dependable engineering. When I’m not deep in code, you’ll find me exploring new tech, mentoring developers, or sketching the next big idea.",
+    "I'm passionate about crafting human-centered digital products that balance thoughtful design with dependable engineering. When I'm not deep in code, you'll find me exploring new tech, mentoring developers, or sketching the next big idea.",
   skills:
     "Proficient in modern web technologies including React, Next.js, TypeScript, and Node.js. Experienced with database design, API development, and cloud deployment.",
   experience:
     "Several years of experience building scalable web applications. Worked on projects ranging from small business websites to large-scale enterprise applications.",
   education:
     "Strong foundation in computer science with continuous learning through online courses, documentation, and hands-on project development.",
+  hobbies:
+    "In my free time, I like to go hiking and I also participate in trail running races.",
 };
 
 export async function getAboutContent(): Promise<AboutContent> {
   const { data, error } = await supabase
     .from("about_me")
-    .select("id, full_name, short_bio, skills, experience, education")
+    .select("id, full_name, short_bio, skills, experience, education, hobbies")
     .limit(1)
     .maybeSingle();
 
@@ -36,6 +38,7 @@ export async function getAboutContent(): Promise<AboutContent> {
     skills: data.skills,
     experience: data.experience,
     education: data.education,
+    hobbies: data.hobbies || "",
   };
 }
 

@@ -114,6 +114,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   defaultValue={aboutContent.education}
                   textarea
                 />
+                <Field
+                  label="Hobbies"
+                  name="hobbies"
+                  defaultValue={aboutContent.hobbies}
+                  textarea
+                />
                 <Button type="submit" className="w-full sm:w-auto">
                   Save About Content
                 </Button>

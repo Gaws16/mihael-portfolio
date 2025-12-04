@@ -26,6 +26,11 @@ export default async function AboutSection() {
       title: "Education",
       content: aboutContent.education,
     },
+    {
+      id: "hobbies",
+      title: "Hobbies",
+      content: aboutContent.hobbies,
+    },
   ];
 
   return (
