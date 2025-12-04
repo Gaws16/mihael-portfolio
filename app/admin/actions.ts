@@ -128,10 +128,13 @@ export async function updateProfilePhotoAction(formData: FormData) {
     throw new Error("No profile photo file provided.");
   }
 
+  // Delete old file first to ensure clean update
+  await supabaseAdmin.storage.from(PROFILE_BUCKET).remove([PROFILE_KEY]);
+
   const { error } = await supabaseAdmin.storage
     .from(PROFILE_BUCKET)
     .upload(PROFILE_KEY, file, {
-      cacheControl: "3600",
+      cacheControl: "no-cache, no-store, must-revalidate",
       upsert: true,
       contentType: file.type || "image/jpeg",
     });

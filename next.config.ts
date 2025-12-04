@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "50mb", // Increased from default 1mb to allow larger profile photos
+    },
+  },
 };
 
 export default nextConfig;
