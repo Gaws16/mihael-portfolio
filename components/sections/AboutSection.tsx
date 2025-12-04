@@ -1,43 +1,56 @@
-"use client";
-
 import InfoCard from "./InfoCard";
 import { InfoCard as InfoCardType } from "@/types";
+import ProfilePhoto from "@/components/profile/ProfilePhoto";
+import { getProfilePhotoUrl } from "@/app/actions/getProfilePhoto";
+import { getAboutContent } from "@/app/actions/getAboutContent";
 
-const aboutCards: InfoCardType[] = [
-  {
-    id: "1",
-    title: "Skills",
-    content:
-      "Proficient in modern web technologies including React, Next.js, TypeScript, and Node.js. Experienced with database design, API development, and cloud deployment.",
-  },
-  {
-    id: "2",
-    title: "Experience",
-    content:
-      "Several years of experience building scalable web applications. Worked on projects ranging from small business websites to large-scale enterprise applications.",
-  },
-  {
-    id: "3",
-    title: "Education",
-    content:
-      "Strong foundation in computer science with continuous learning through online courses, documentation, and hands-on project development.",
-  },
-];
+export default async function AboutSection() {
+  const [profilePhotoUrl, aboutContent] = await Promise.all([
+    getProfilePhotoUrl(),
+    getAboutContent(),
+  ]);
 
-export default function AboutSection() {
+  const aboutCards: InfoCardType[] = [
+    {
+      id: "skills",
+      title: "Skills",
+      content: aboutContent.skills,
+    },
+    {
+      id: "experience",
+      title: "Experience",
+      content: aboutContent.experience,
+    },
+    {
+      id: "education",
+      title: "Education",
+      content: aboutContent.education,
+    },
+  ];
+
   return (
     <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-7xl">
-        <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
-          About Me
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {aboutCards.map((card) => (
-            <InfoCard key={card.id} card={card} />
-          ))}
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
+          <div className="flex flex-col items-center text-center gap-6">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold text-foreground">
+                Meet {aboutContent.fullName}
+              </h2>
+            </div>
+            <ProfilePhoto src={profilePhotoUrl} />
+            <p className="max-w-md text-base text-muted-foreground">
+              {aboutContent.shortBio}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {aboutCards.map((card) => (
+              <InfoCard key={card.id} card={card} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

@@ -20,3 +20,11 @@ export interface InfoCard {
   icon?: string;
 }
 
+export interface AboutContent {
+  fullName: string;
+  shortBio: string;
+  skills: string;
+  experience: string;
+  education: string;
+}
+
