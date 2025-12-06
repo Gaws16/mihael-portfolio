@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export interface ContactFormData {
   name: string;
   email: string;
@@ -18,6 +16,9 @@ export async function sendContactEmail(data: ContactFormData) {
   if (!process.env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY environment variable is not set");
   }
+
+  // Initialize Resend lazily (only when actually sending an email)
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   // Use Resend's default development domain (no custom domain verification needed)
   const fromEmail = "onboarding@resend.dev";
